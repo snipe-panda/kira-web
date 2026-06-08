@@ -42,3 +42,23 @@ uv run --with fastapi --with "uvicorn[standard]" --with openai --with Pillow \
 > **Note:** `prompts.py` / pipeline modules are copied from the demo repo. The
 > two are not auto-synced — prompt changes must be ported. A shared package is
 > the eventual fix.
+
+## Deploy (single Docker service serves UI + API)
+
+The `Dockerfile` builds the frontend and serves it from FastAPI, so one service
+exposes the whole app (UI at `/`, API at `/api/*`). No CORS in production.
+
+**Render (blueprint):** render.com → New → Blueprint → pick this repo → set
+`OPENAI_API_KEY` in the dashboard. `render.yaml` wires the rest (health check at
+`/api/health`).
+
+**Any Docker host (Railway / Fly / Cloud Run):**
+```bash
+docker build -t kira-web .
+docker run -p 8000:8000 -e OPENAI_API_KEY=sk-... kira-web
+# → http://localhost:8000
+```
+
+> ⚠️ The app makes real `gpt-image-2` calls (~$0.07–0.15/render) and has **no
+> auth**. Before exposing a public URL, set an OpenAI **spend cap** and consider
+> putting it behind access control.

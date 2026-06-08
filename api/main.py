@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from image_pipeline import enhance_image_with_context, generate_placement
 from utils import pil_to_bytes, resize_image
@@ -127,3 +128,12 @@ async def place(
             product_context=_parse_context(product_context),
         )
     )
+
+
+# ── Serve the built frontend (single-origin) ──────────────────────────────────
+# If web/dist exists (production build), serve it at the root. API routes above
+# are registered first, so they take precedence; everything else falls back to
+# the static SPA. In dev (no dist) this is skipped and Vite serves the UI.
+_DIST = os.path.join(os.path.dirname(__file__), "..", "web", "dist")
+if os.path.isdir(_DIST):
+    app.mount("/", StaticFiles(directory=_DIST, html=True), name="static")

@@ -1,0 +1,12 @@
+# Render.com blueprint — one Docker web service serving UI + API.
+# Deploy: render.com → New → Blueprint → pick this repo → set OPENAI_API_KEY.
+services:
+  - type: web
+    name: kira-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false        # set in the Render dashboard (never committed)
