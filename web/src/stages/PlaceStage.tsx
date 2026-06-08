@@ -2,7 +2,18 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { place, placements as fetchPlacements } from '../lib/api'
 import { useKira } from '../store'
 import type { Placement, StyleRegister } from '../lib/types'
-import { Button, downloadB64, ErrorBanner, Spinner, StageHeader, Tag, SPIN, pick } from '../components/ui'
+import {
+  Button,
+  downloadB64,
+  ErrorBanner,
+  ImageFrame,
+  ImageSkeleton,
+  Spinner,
+  StageHeader,
+  Tag,
+  SPIN,
+  pick,
+} from '../components/ui'
 
 const REGISTERS: StyleRegister[] = ['Understated', 'Modern', 'Luxe']
 
@@ -153,29 +164,28 @@ export default function PlaceStage() {
       {/* Generation result */}
       {chosen && (
         <div className="flex flex-col gap-4 border-t border-line pt-6">
-          <h3 className="font-display text-xl font-bold">Generating: {chosen.label}</h3>
-          {loadingPlace && <Spinner label={placeMsg} />}
-          {!loadingPlace && k.placementResult && (
-            <>
-              <p className="eyebrow">Lifestyle render · 1024×1024</p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {k.placementResult.images.map((b64, i) => (
-                  <figure key={i} className="flex flex-col gap-2">
-                    <img
-                      src={`data:image/png;base64,${b64}`}
-                      alt={`${chosen.label} render`}
-                      className="w-full rounded-xl border border-line"
-                    />
-                    <Button
-                      onClick={() => downloadB64(b64, `${stem}_${chosen.label.replace(/\s+/g, '_').toLowerCase()}.png`)}
-                    >
-                      ↓ Download
-                    </Button>
-                  </figure>
-                ))}
-              </div>
-            </>
-          )}
+          <h2 className="font-display text-xl font-bold">Generating: {chosen.label}</h2>
+          <p className="eyebrow">Lifestyle render · 1024×1024</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {loadingPlace || !k.placementResult ? (
+              <ImageSkeleton label={placeMsg} />
+            ) : (
+              k.placementResult.images.map((b64, i) => (
+                <figure key={i} className="flex flex-col gap-2">
+                  <ImageFrame
+                    src={`data:image/png;base64,${b64}`}
+                    alt={`${chosen.label} lifestyle render`}
+                    fit="cover"
+                  />
+                  <Button
+                    onClick={() => downloadB64(b64, `${stem}_${chosen.label.replace(/\s+/g, '_').toLowerCase()}.png`)}
+                  >
+                    ↓ Download
+                  </Button>
+                </figure>
+              ))
+            )}
+          </div>
         </div>
       )}
 

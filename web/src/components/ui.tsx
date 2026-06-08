@@ -16,11 +16,48 @@ export function Button({ variant = 'ghost', className = '', ...rest }: BtnProps)
 }
 
 // ── Stage header (eyebrow + title) ───────────────────────────────────────────
+// h1 because it's the primary heading of the current view (one stage renders
+// at a time), keeping a valid heading order for screen readers.
 export function StageHeader({ step, title }: { step: string; title: string }) {
   return (
     <div>
       <p className="eyebrow mb-1.5">{step}</p>
-      <h2 className="font-display text-2xl font-bold sm:text-[1.7rem]">{title}</h2>
+      <h1 className="font-display text-2xl font-bold sm:text-[1.7rem]">{title}</h1>
+    </div>
+  )
+}
+
+// ── Image frame: reserves a square slot so images don't cause layout shift ────
+export function ImageFrame({
+  src,
+  alt,
+  fit = 'contain',
+}: {
+  src: string
+  alt: string
+  fit?: 'contain' | 'cover'
+}) {
+  return (
+    <div className="aspect-square overflow-hidden rounded-xl border border-line bg-surface">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className={`h-full w-full ${fit === 'cover' ? 'object-cover' : 'object-contain'}`}
+      />
+    </div>
+  )
+}
+
+// ── Skeleton: pulsing placeholder that holds image space during a render ──────
+export function ImageSkeleton({ label }: { label?: string }) {
+  return (
+    <div
+      className="grid aspect-square place-items-center rounded-xl border border-line bg-surface motion-safe:animate-pulse"
+      role="status"
+      aria-live="polite"
+    >
+      {label && <span className="px-4 text-center text-sm text-muted">{label}</span>}
     </div>
   )
 }

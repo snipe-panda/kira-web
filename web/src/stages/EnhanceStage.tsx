@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { enhance } from '../lib/api'
 import { useKira } from '../store'
-import { Button, downloadB64, ErrorBanner, Note, Spinner, StageHeader, SPIN, pick } from '../components/ui'
+import {
+  Button,
+  downloadB64,
+  ErrorBanner,
+  ImageFrame,
+  ImageSkeleton,
+  Note,
+  StageHeader,
+  SPIN,
+  pick,
+} from '../components/ui'
 
 export default function EnhanceStage() {
   const k = useKira()
-  const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [spinMsg, setSpinMsg] = useState(() => pick(SPIN.enhance))
   const [draft, setDraft] = useState(k.adjustment)
@@ -16,15 +25,13 @@ export default function EnhanceStage() {
     async (adjustment: string) => {
       if (!k.file || !k.productContext) return
       setSpinMsg(pick(SPIN.enhance))
-      setLoading(true)
       setErr(null)
+      k.setEnhanceResult(null) // clear → After slot shows the skeleton while rendering
       try {
         const res = await enhance(k.file, k.productContext, adjustment)
         k.setEnhanceResult(res)
       } catch (e) {
         setErr(e instanceof Error ? e.message : 'Enhancement failed')
-      } finally {
-        setLoading(false)
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
@@ -44,8 +51,7 @@ export default function EnhanceStage() {
     <section className="flex flex-col gap-6">
       <StageHeader step="Step 3 · Enhance" title="Studio enhancement" />
 
-      {loading && <Spinner label={spinMsg} />}
-      {err && (
+      {err ? (
         <div className="flex flex-col gap-3">
           <ErrorBanner message={err} />
           <div className="flex gap-3">
@@ -53,29 +59,37 @@ export default function EnhanceStage() {
             <Button variant="primary" onClick={() => void run(k.adjustment)}>↻ Retry</Button>
           </div>
         </div>
-      )}
-
-      {!loading && !err && after && (
+      ) : (
         <>
           <p className="eyebrow">Studio render · 1024×1024</p>
+          {/* Before/after slots keep their square footprint while rendering,
+              so the result appears in place with no layout shift. */}
           <div className="grid gap-4 sm:grid-cols-2">
             <figure className="flex flex-col gap-2">
               <figcaption className="eyebrow">Before</figcaption>
-              {beforeUrl && (
-                <img src={beforeUrl} alt="Original" className="w-full rounded-xl border border-line" />
-              )}
+              {beforeUrl && <ImageFrame src={beforeUrl} alt="Your original photo" />}
             </figure>
             <figure className="flex flex-col gap-2">
               <figcaption className="eyebrow">After</figcaption>
-              <img
-                src={`data:image/png;base64,${after}`}
-                alt="Studio-enhanced product"
-                className="w-full rounded-xl border border-line"
-              />
-              <Button onClick={() => downloadB64(after, `studio_${stem}.png`)}>↓ Download</Button>
+              {after ? (
+                <>
+                  <ImageFrame
+                    src={`data:image/png;base64,${after}`}
+                    alt="Studio-enhanced product"
+                    fit="cover"
+                  />
+                  <Button onClick={() => downloadB64(after, `studio_${stem}.png`)}>↓ Download</Button>
+                </>
+              ) : (
+                <ImageSkeleton label={spinMsg} />
+              )}
             </figure>
           </div>
+        </>
+      )}
 
+      {!err && after && (
+        <>
           {/* Refine */}
           <div className="flex flex-col gap-3 border-t border-line pt-6">
             <p className="eyebrow">Refine</p>

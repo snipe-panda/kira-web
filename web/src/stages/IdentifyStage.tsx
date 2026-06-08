@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { recognize } from '../lib/api'
 import { useKira } from '../store'
-import { Button, ErrorBanner, Spinner, StageHeader, SPIN, pick } from '../components/ui'
+import { Button, ErrorBanner, ImageFrame, Spinner, StageHeader, SPIN, pick } from '../components/ui'
 
 export default function IdentifyStage() {
   const k = useKira()
@@ -96,9 +96,7 @@ export default function IdentifyStage() {
         <>
           <div className="grid gap-6 md:grid-cols-[260px_1fr]">
             <div className="flex flex-col gap-3">
-              <div className="overflow-hidden rounded-2xl border border-line bg-surface">
-                {previewUrl && <img src={previewUrl} alt="Your product" className="w-full" />}
-              </div>
+              {previewUrl && <ImageFrame src={previewUrl} alt="Your uploaded product photo" />}
               {confidence != null && (
                 <div>
                   <p className="eyebrow">AI confidence</p>
@@ -114,31 +112,31 @@ export default function IdentifyStage() {
                 Correct anything the AI got wrong — these details guide the enhancement.
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className={label}>Product type</label>
+                <label className="block">
+                  <span className={label}>Product type</span>
                   <input className={field} value={productType} onChange={(e) => setProductType(e.target.value)} />
-                </div>
-                <div>
-                  <label className={label}>Material</label>
+                </label>
+                <label className="block">
+                  <span className={label}>Material</span>
                   <input className={field} value={material} onChange={(e) => setMaterial(e.target.value)} />
-                </div>
-                <div>
-                  <label className={label}>Primary colour</label>
+                </label>
+                <label className="block">
+                  <span className={label}>Primary colour</span>
                   <input className={field} value={color} onChange={(e) => setColor(e.target.value)} />
-                </div>
-                <div>
-                  <label className={label}>Approximate size</label>
+                </label>
+                <label className="block">
+                  <span className={label}>Approximate size</span>
                   <input className={field} value={dims} onChange={(e) => setDims(e.target.value)} />
-                </div>
+                </label>
               </div>
-              <div>
-                <label className={label}>Key features (one per line)</label>
+              <label className="block">
+                <span className={label}>Key features (one per line)</span>
                 <textarea className={`${field} min-h-24`} value={features} onChange={(e) => setFeatures(e.target.value)} />
-              </div>
-              <div>
-                <label className={label}>Do-not-alter list (one per line)</label>
+              </label>
+              <label className="block">
+                <span className={label}>Do-not-alter list (one per line)</span>
                 <textarea className={`${field} min-h-20`} value={warnings} onChange={(e) => setWarnings(e.target.value)} />
-              </div>
+              </label>
             </div>
           </div>
 
