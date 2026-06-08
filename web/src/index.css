@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+/* ── Kira design tokens (Tailwind v4 CSS-first config) ──────────────────────
+   These generate utilities: bg-bg, bg-surface, text-ink, text-muted,
+   text-amber, border-line, font-display/mono/body, etc. */
+@theme {
+  --color-bg:        #0B0B0C;
+  --color-surface:   #161618;
+  --color-surface2:  #1D1D20;
+  --color-line:      #2A2A2E;
+  --color-ink:       #EDEDED;
+  --color-muted:     #9A9AA0;   /* lighter than the Streamlit build for AA contrast */
+  --color-amber:     #F2B24C;
+  --color-ambersoft: #F5C77E;
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono:    "Space Mono", ui-monospace, monospace;
+  --font-body:    "Inter", system-ui, sans-serif;
+
+  --radius-card: 16px;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Visible focus for keyboard users (accessibility) */
+:where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mono eyebrow label used across stages */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
