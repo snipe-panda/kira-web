@@ -2,23 +2,29 @@
 
 Mobile-first, responsive rebuild of the Kira product-studio tool — a FastAPI
 backend wrapping the existing AI pipeline, with a React + Vite + Tailwind
-frontend (in progress).
+frontend. One phone photo in, studio listing image out.
 
 > Replaces the Streamlit demo (`product-studio-ai-demo`) to get real
 > mobile-first responsive control. The AI pipeline (`api/image_pipeline.py`,
 > `vision.py`, `prompts.py`, `utils.py`) is carried over unchanged — image model
 > locked to **gpt-image-2 / medium**.
 
+**Docs:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) — system design, API contract,
+state flow · [`DESIGN.md`](./DESIGN.md) — design system, responsive strategy,
+accessibility, checklist score · [`web/README.md`](./web/README.md) — frontend dev.
+
 ## Structure
 ```
 kira-web/
 ├── api/          # FastAPI backend
-│   ├── main.py           # routes + CORS
+│   ├── main.py           # routes + CORS + serves the built SPA (prod)
 │   ├── image_pipeline.py # gpt-image-2 calls
 │   ├── vision.py         # GPT-4o recognition + placement suggestions
 │   ├── prompts.py        # prompts + STYLE_REGISTERS
 │   └── utils.py
-└── web/          # React + Vite + Tailwind frontend (Phase 2+)
+├── web/          # React + Vite + Tailwind frontend
+├── Dockerfile    # single image: builds web/dist, serves api + dist
+└── render.yaml   # Render blueprint
 ```
 
 ## API endpoints
